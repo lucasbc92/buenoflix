@@ -32,7 +32,10 @@ const CadastroCategoria = () => {
   };
 
   useEffect(() => {
-    const URL = 'http://localhost:8080/categorias';
+    const URL = window.location.hostname.includes('localhost')
+      ? 'http://localhost:8080/categorias'
+      : 'https://buenoflix-imersaoalura.herokuapp.com/categorias';
+
     fetch(URL)
       .then(async (response) => {
         const responseJSON = await response.json();
@@ -80,6 +83,8 @@ const CadastroCategoria = () => {
         <Button>Cadastrar</Button>
       </form>
 
+      {categorias.length
+      && (
       <ul>
         {categorias.map((categoria, index) => (
           <li key={`${categoria.nome}${index}`}>
@@ -87,6 +92,7 @@ const CadastroCategoria = () => {
           </li>
         ))}
       </ul>
+      )}
 
       <Link to="/">
         Ir para Home
