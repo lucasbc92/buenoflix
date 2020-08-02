@@ -4,54 +4,43 @@ import { Link } from 'react-router-dom';
 import Layout from '../../../components/Layout';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import useForm from '../../../hooks/useForm';
+import categoriasRepository from '../../../repositories/categorias';
 
 const CadastroCategoria = () => {
   const valoresIniciais = {
-    nome: '',
+    titulo: '',
     descricao: '',
     cor: '#000',
   };
 
-  const [form, setForm] = useState(valoresIniciais);
-  const [categorias, setCategorias] = useState([]);
+  const { form, handleForm, clearForm } = useForm(valoresIniciais);
 
-  const handleForm = (event) => {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value,
-    });
-  };
+  const [categorias, setCategorias] = useState([]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setCategorias([
-      ...categorias,
-      form,
-    ]);
-    setForm(valoresIniciais);
+    categoriasRepository.create(form)
+      .then(() => {
+        clearForm();
+      });
   };
 
   useEffect(() => {
-    const URL = window.location.hostname.includes('localhost')
-      ? 'http://localhost:8080/categorias'
-      : 'https://buenoflix-imersaoalura.herokuapp.com/categorias';
-
-    fetch(URL)
-      .then(async (response) => {
-        const responseJSON = await response.json();
-        setCategorias([
-          ...responseJSON,
-        ]);
+    categoriasRepository.getAll()
+      .then((categoriasResponse) => {
+        setCategorias(categoriasResponse);
+      })
+      .catch((err) => {
+        console.log(err.message);
       });
-  }, [
-    form.nome,
-  ]);
+  }, [form.titulo]);
 
   return (
     <Layout>
       <h1>
         Cadastro de Categoria:
-        {form.nome}
+        {form.titulo}
       </h1>
 
       <form style={{ background: form.cor }} onSubmit={handleSubmit}>
@@ -59,8 +48,8 @@ const CadastroCategoria = () => {
           <FormField
             label="Nome da Categoria"
             type="text"
-            value={form.nome}
-            name="nome"
+            value={form.titulo}
+            name="titulo"
             onChange={handleForm}
           />
 
@@ -87,8 +76,8 @@ const CadastroCategoria = () => {
       && (
       <ul>
         {categorias.map((categoria, index) => (
-          <li key={`${categoria.nome}${index}`}>
-            {categoria.nome}
+          <li key={`${categoria.titulo}${index}`}>
+            {categoria.titulo}
           </li>
         ))}
       </ul>
