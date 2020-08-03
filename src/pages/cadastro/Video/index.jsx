@@ -9,9 +9,9 @@ import categoriasRepository from '../../../repositories/categorias';
 
 const CadastroVideo = () => {
   const valoresIniciais = {
-    titulo: 'Vídeo padrão',
-    url: 'https://www.youtube.com/watch?v=WrNVMHLQ1bY',
-    categoria: 'Front End',
+    titulo: '',
+    url: '',
+    categoria: '',
   };
 
   const history = useHistory();
