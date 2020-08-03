@@ -1,4 +1,4 @@
-### BuenoFlix
+# BuenoFlix
 
 Project developed during Alura React Immersion.
 
