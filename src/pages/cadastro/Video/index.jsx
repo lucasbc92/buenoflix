@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import Layout from '../../../components/Layout';
 import FormField from '../../../components/FormField';
 import useForm from '../../../hooks/useForm';
 import Button from '../../../components/Button';
 import videosRepository from '../../../repositories/videos';
+import categoriasRepository from '../../../repositories/categorias';
 
 const CadastroVideo = () => {
   const valoresIniciais = {
@@ -14,15 +15,28 @@ const CadastroVideo = () => {
   };
 
   const history = useHistory();
-
+  const [categorias, setCategorias] = useState([]);
+  const categoriasTitulos = categorias.map(({ titulo }) => titulo);
   const { form, handleForm } = useForm(valoresIniciais);
+
+  useEffect(() => {
+    categoriasRepository.getAll()
+      .then((categoriasResponse) => {
+        setCategorias(categoriasResponse);
+      });
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const categoriaEscolhida = categorias.find((categoria) => {
+      return categoria.titulo === form.categoria;
+    });
+
     videosRepository.create({
       titulo: form.titulo,
       url: form.url,
-      categoriaId: 6,
+      categoriaId: categoriaEscolhida.id,
     })
       .then(() => {
         history.push('/');
@@ -58,6 +72,7 @@ const CadastroVideo = () => {
           value={form.categoria}
           name="categoria"
           onChange={handleForm}
+          suggestions={categoriasTitulos}
         />
 
         <Button>Cadastrar</Button>
